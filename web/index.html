@@ -1,0 +1,605 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>instinct.FIRE</title>
+<meta name="description" content="Find your FIRE type, build your Indian-rupee plan, track every month until financial independence.">
+<meta name="theme-color" content="#0f0c1d">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
+<style>
+:root{
+  --bg:#0f0c1d;--bg2:#171331;--card:#1d1840;--card2:#241e4f;--line:rgba(255,255,255,.08);
+  --text:#f4efff;--muted:#a9a1c9;--dim:#6f689a;
+  --ember:#ff6b35;--gold:#ffc857;--rose:#ff8fab;--mint:#7ef0c2;--sky:#8ad4ff;--lilac:#c3a6ff;
+  --grad:linear-gradient(135deg,#ff6b35 0%,#ff3d81 50%,#ffc857 100%);
+  --r:20px;--sh:0 18px 50px rgba(0,0,0,.45);
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:"Segoe UI",Inter,system-ui,-apple-system,Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+body{min-height:100vh;background:
+ radial-gradient(900px 500px at 10% -10%,rgba(255,107,53,.18),transparent 60%),
+ radial-gradient(700px 400px at 100% 0,rgba(195,166,255,.16),transparent 60%),
+ var(--bg)}
+a{color:var(--sky)}
+h1,h2,h3{margin:0 0 .35em;line-height:1.15;letter-spacing:-.01em}
+h1{font-size:clamp(1.6rem,4vw,2.4rem)} h2{font-size:1.35rem} h3{font-size:1.05rem}
+p{margin:.35em 0;color:var(--muted);line-height:1.55}
+.app{max-width:1100px;margin:0 auto;padding:16px 16px 96px}
+@media(min-width:900px){.app{padding-left:240px}}
+/* nav */
+nav{position:fixed;left:0;right:0;bottom:0;background:rgba(15,12,29,.92);backdrop-filter:blur(14px);border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:6px 4px calc(6px + env(safe-area-inset-bottom));z-index:50}
+nav button{background:none;border:0;color:var(--dim);font:inherit;font-size:.68rem;display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 6px;border-radius:12px;cursor:pointer;min-width:52px}
+nav button .ic{font-size:1.25rem;line-height:1}
+nav button.on{color:var(--gold)}
+@media(min-width:900px){
+ nav{top:0;bottom:0;right:auto;width:220px;flex-direction:column;justify-content:flex-start;border-top:0;border-right:1px solid var(--line);padding:24px 12px}
+ nav button{flex-direction:row;font-size:.95rem;gap:12px;padding:12px 14px;width:100%;justify-content:flex-start}
+ nav .brand{display:block!important}
+}
+nav .brand{display:none;font-weight:800;font-size:1.3rem;margin:0 14px 18px;background:var(--grad);-webkit-background-clip:text;color:transparent}
+/* layout */
+.view{display:none;animation:fade .35s ease}
+.view.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px;margin:14px 0;box-shadow:var(--sh)}
+.card.glow{background:linear-gradient(160deg,#2a1f57,#1d1840);border-color:rgba(255,200,87,.25)}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.grid3{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.stat{background:var(--card2);border-radius:16px;padding:14px}
+.stat .l{font-size:.72rem;color:var(--dim);text-transform:uppercase;letter-spacing:.08em}
+.stat .v{font-size:1.35rem;font-weight:800;margin-top:4px}
+.stat.ember .v{color:var(--ember)}.stat.gold .v{color:var(--gold)}.stat.mint .v{color:var(--mint)}.stat.sky .v{color:var(--sky)}.stat.rose .v{color:var(--rose)}.stat.lilac .v{color:var(--lilac)}
+.btn{background:var(--grad);color:#1a0a0a;border:0;border-radius:14px;padding:13px 18px;font:inherit;font-weight:800;cursor:pointer;box-shadow:0 10px 30px rgba(255,107,53,.35);transition:transform .15s}
+.btn:active{transform:scale(.97)}
+.btn.ghost{background:var(--card2);color:var(--text);box-shadow:none;border:1px solid var(--line)}
+.btn.sm{padding:8px 12px;font-size:.85rem;border-radius:10px}
+.btn.danger{background:#3a1f2e;color:var(--rose);box-shadow:none}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.sp{justify-content:space-between}
+label.f{display:block;margin:10px 0}
+label.f span{display:block;font-size:.78rem;color:var(--muted);margin-bottom:5px}
+input,select,textarea{width:100%;background:#120f26;border:1px solid var(--line);color:var(--text);border-radius:12px;padding:11px 12px;font:inherit;font-size:1rem;outline:0}
+input:focus,select:focus{border-color:var(--gold)}
+input[type=range]{padding:0;accent-color:var(--ember)}
+.pill{display:inline-block;padding:5px 11px;border-radius:999px;font-size:.75rem;font-weight:700;background:var(--card2);color:var(--muted);border:1px solid var(--line)}
+.pill.ember{color:var(--ember);border-color:rgba(255,107,53,.4)}.pill.gold{color:var(--gold)}.pill.mint{color:var(--mint)}.pill.sky{color:var(--sky)}.pill.rose{color:var(--rose)}.pill.lilac{color:var(--lilac)}
+.tag{font-size:.7rem;color:var(--dim);text-transform:uppercase;letter-spacing:.1em}
+.affirm{background:linear-gradient(135deg,rgba(255,107,53,.18),rgba(195,166,255,.16));border:1px solid rgba(255,200,87,.3);border-radius:var(--r);padding:16px 18px;margin:14px 0;font-size:1.05rem;font-weight:600;line-height:1.5;position:relative}
+.affirm small{display:block;color:var(--muted);font-weight:400;font-size:.8rem;margin-top:6px}
+.affirm .br{position:absolute;right:12px;top:10px;font-size:.7rem;color:var(--gold);cursor:pointer}
+.bar{height:12px;background:#120f26;border-radius:99px;overflow:hidden;border:1px solid var(--line)}
+.bar i{display:block;height:100%;background:var(--grad);border-radius:99px;transition:width .8s ease}
+.opt{display:block;background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin:8px 0;cursor:pointer;transition:.15s}
+.opt:hover{border-color:var(--gold)}
+.opt.sel{border-color:var(--ember);background:linear-gradient(135deg,rgba(255,107,53,.2),rgba(255,61,129,.12))}
+table{width:100%;border-collapse:collapse;font-size:.88rem}
+th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line)}
+th{color:var(--dim);font-weight:600;font-size:.72rem;text-transform:uppercase;letter-spacing:.06em}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+canvas{width:100%;height:auto;display:block}
+.fire-hero{display:grid;grid-template-columns:150px 1fr;gap:16px;align-items:center}
+@media(max-width:520px){.fire-hero{grid-template-columns:1fr;text-align:center}}
+.big{font-size:clamp(1.9rem,6vw,2.8rem);font-weight:900;background:var(--grad);-webkit-background-clip:text;color:transparent;line-height:1.05}
+details{background:var(--card2);border-radius:14px;padding:10px 14px;margin:8px 0;border:1px solid var(--line)}
+summary{cursor:pointer;font-weight:700;color:var(--gold)}
+details p,details li{color:var(--muted)}
+ul{padding-left:18px;margin:.4em 0}li{margin:.25em 0;line-height:1.5}
+.lesson h3{color:var(--gold);margin-top:14px}
+.month{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;background:var(--card2);margin:6px 0;border:1px solid var(--line)}
+.month .dot{width:12px;height:12px;border-radius:50%;background:#3a3560;flex:none}
+.month.done .dot{background:var(--mint);box-shadow:0 0 10px var(--mint)}
+.month.cur .dot{background:var(--gold);box-shadow:0 0 10px var(--gold)}
+.month b{flex:1}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:90px;background:#2a2353;color:var(--text);padding:12px 18px;border-radius:14px;border:1px solid rgba(255,200,87,.4);z-index:99;box-shadow:var(--sh);opacity:0;transition:.3s;pointer-events:none}
+.toast.show{opacity:1}
+.hint{font-size:.78rem;color:var(--dim)}
+.chip{display:inline-flex;align-items:center;gap:6px;background:#120f26;border:1px solid var(--line);border-radius:10px;padding:6px 10px;font-size:.8rem;margin:3px 3px 3px 0}
+.chip button{background:none;border:0;color:var(--rose);cursor:pointer;font-weight:700}
+.breath{width:140px;height:140px;border-radius:50%;margin:16px auto;background:radial-gradient(circle,rgba(255,200,87,.9),rgba(255,107,53,.4) 60%,transparent 70%);animation:breathe 8s ease-in-out infinite;display:flex;align-items:center;justify-content:center;font-weight:800;color:#1a0a0a}
+@keyframes breathe{0%,100%{transform:scale(.7);opacity:.6}50%{transform:scale(1.05);opacity:1}}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.logo{font-weight:900;font-size:1.3rem;background:var(--grad);-webkit-background-clip:text;color:transparent}
+.badge{font-size:.7rem;background:var(--card2);padding:4px 9px;border-radius:999px;color:var(--mint);border:1px solid rgba(126,240,194,.3)}
+.ladder{position:relative;height:260px;margin:10px 0}
+.ladder svg{width:100%;height:100%}
+.legend{display:flex;gap:14px;font-size:.75rem;color:var(--muted);flex-wrap:wrap}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-2px}
+</style>
+</head>
+<body>
+<div class="app">
+ <div class="top"><div class="logo">instinct.FIRE</div><span class="badge" id="netBadge">● offline-ready</span></div>
+
+ <!-- ================= HOME / DASHBOARD ================= -->
+ <section class="view" id="v-home">
+  <div id="homeEmpty">
+   <div class="card glow">
+    <span class="tag">Welcome</span>
+    <h1>Your money should buy you <span class="big" style="font-size:inherit">time</span>.</h1>
+    <p>FIRE — <b>Financial Independence, Retire Early</b> — is a plan to build a corpus large enough that work becomes optional. instinct.FIRE helps you find <i>your</i> kind of FIRE, size your number in rupees, handle loans, and then walks with you month by month until you get there.</p>
+    <div class="row" style="margin-top:12px">
+     <button class="btn" onclick="go('quiz')">🔥 Find my FIRE type</button>
+     <button class="btn ghost" onclick="go('learn')">📖 Learn FIRE first</button>
+     <button class="btn ghost" onclick="go('calc')">🧮 Quick calculator</button>
+    </div>
+   </div>
+   <div class="grid3">
+    <div class="card"><h3>1 · Discover</h3><p>A 7-question quiz matches you with Lean, Regular, Fat, Coast, Barista or Slow FIRE.</p></div>
+    <div class="card"><h3>2 · Plan</h3><p>Income, expenses, existing corpus, loans and assumptions → your FIRE number, timeline and required monthly SIP.</p></div>
+    <div class="card"><h3>3 · Track</h3><p>Log every month's salary, spending and investments. Watch the Freedom Flame fill up.</p></div>
+   </div>
+  </div>
+
+  <div id="homePlan" style="display:none">
+   <div class="affirm" id="affirmBox"></div>
+   <div class="card glow">
+    <div class="fire-hero">
+     <div><svg id="flame" viewBox="0 0 120 160" width="150" height="200"></svg></div>
+     <div>
+      <span class="tag" id="hFireType">—</span>
+      <div class="big" id="hFireNumber">₹0</div>
+      <p id="hFireSub">Your FIRE number</p>
+      <div class="bar" style="margin:10px 0"><i id="hBar" style="width:0%"></i></div>
+      <div class="row sp"><span id="hPct" class="pill gold">0% there</span><span id="hGap" class="pill">₹0 to go</span></div>
+     </div>
+    </div>
+   </div>
+   <div class="grid">
+    <div class="stat ember"><div class="l">Freedom date</div><div class="v" id="hDate">—</div></div>
+    <div class="stat gold"><div class="l">Years to go</div><div class="v" id="hYears">—</div></div>
+    <div class="stat mint"><div class="l">Savings rate</div><div class="v" id="hRate">—</div></div>
+    <div class="stat sky"><div class="l">Flat SIP needed (no hikes)</div><div class="v" id="hSip">—</div></div>
+    <div class="stat lilac"><div class="l">You invest now</div><div class="v" id="hNow">—</div></div>
+    <div class="stat rose"><div class="l">Corpus today</div><div class="v" id="hCorpus">—</div></div>
+   </div>
+   <div class="card">
+    <div class="row sp"><h3>🏔️ The Freedom Ladder</h3><span class="hint">How far your climb has come</span></div>
+    <div class="ladder" id="ladder"></div>
+   </div>
+   <div class="card">
+    <h3>📈 Journey to your FIRE number</h3>
+    <div class="legend"><span><i style="background:#ff6b35"></i>Projected corpus</span><span><i style="background:#ffc857"></i>FIRE number (inflating)</span><span><i style="background:#7ef0c2"></i>Logged actuals</span></div>
+    <canvas id="chart" width="900" height="360"></canvas>
+   </div>
+   <div class="card" id="insightCard"></div>
+   <div class="row">
+    <button class="btn" onclick="go('track')">📅 Log this month</button>
+    <button class="btn ghost" onclick="go('plan')">✏️ Edit plan</button>
+    <button class="btn ghost" onclick="go('loans')">🏦 Loans</button>
+   </div>
+  </div>
+ </section>
+
+ <!-- ================= QUIZ ================= -->
+ <section class="view" id="v-quiz">
+  <div class="card glow">
+   <span class="tag">Step 1 · Discover</span>
+   <h1>Which FIRE is yours?</h1>
+   <p>There is no single FIRE. Answer honestly — the app recommends a flavour, explains why, and you can override it.</p>
+   <div class="bar"><i id="qBar" style="width:0%"></i></div>
+  </div>
+  <div class="card" id="quizCard"></div>
+ </section>
+
+ <!-- ================= PLAN ================= -->
+ <section class="view" id="v-plan">
+  <div class="card glow">
+   <span class="tag">Step 2 · Plan</span>
+   <h1>Your numbers, in rupees</h1>
+   <p>Everything is monthly, in today's ₹. The app inflates expenses to your FIRE year, applies an India-safe withdrawal rate, and builds your timeline.</p>
+  </div>
+  <div class="card">
+   <h3>About you</h3>
+   <div class="grid">
+    <label class="f"><span>Name</span><input id="pName" placeholder="Your name"></label>
+    <label class="f"><span>Current age</span><input id="pAge" type="number" min="16" max="70" value="27"></label>
+    <label class="f"><span>Target FIRE age</span><input id="pFireAge" type="number" min="25" max="70" value="45"></label>
+    <label class="f"><span>Live until (planning)</span><input id="pLife" type="number" min="60" max="100" value="90"></label>
+    <label class="f"><span>FIRE type</span><select id="pType">
+      <option value="lean">Lean FIRE</option><option value="regular" selected>Regular FIRE</option><option value="fat">Fat FIRE</option><option value="coast">Coast FIRE</option><option value="barista">Barista FIRE</option><option value="slow">Slow FIRE</option></select></label>
+    <label class="f"><span>Dependants</span><select id="pDeps"><option value="0">Just me</option><option value="1">Partner</option><option value="2">Partner + kids</option><option value="3">Parents too (sandwich)</option></select></label>
+   </div>
+  </div>
+  <div class="card">
+   <h3>Income</h3>
+   <div class="grid">
+    <label class="f"><span>Monthly take-home (₹)</span><input id="pIncome" type="number" min="0" step="1000" value="80000"></label>
+    <label class="f"><span>Other monthly income (₹)</span><input id="pIncome2" type="number" min="0" step="500" value="0"></label>
+    <label class="f"><span>Expected yearly hike (%)</span><input id="pGrowth" type="number" min="0" max="30" step="0.5" value="8"></label>
+    <label class="f"><span>Employer EPF per month (₹, both sides)</span><input id="pEpfM" type="number" min="0" step="500" value="0"></label>
+   </div>
+  </div>
+  <div class="card">
+   <h3>Monthly expenses (today's ₹)</h3>
+   <div class="grid" id="expGrid"></div>
+   <div class="row sp" style="margin-top:8px"><b>Total: <span id="expTotal">₹0</span></b><span class="hint">Exclude EMIs — loans are handled separately.</span></div>
+  </div>
+  <div class="card">
+   <h3>What you already have (corpus)</h3>
+   <div class="grid" id="corpGrid"></div>
+   <div class="row sp" style="margin-top:8px"><b>Total: <span id="corpTotal">₹0</span></b><span class="hint">Only investments. Not your home or car.</span></div>
+  </div>
+  <div class="card">
+   <h3>Assumptions <span class="hint">(India defaults — change if you know better)</span></h3>
+   <div class="grid">
+    <label class="f"><span>Inflation (%)</span><input id="aInf" type="number" step="0.5" value="6"></label>
+    <label class="f"><span>Return before FIRE (%)</span><input id="aRet" type="number" step="0.5" value="11"></label>
+    <label class="f"><span>Return after FIRE (%)</span><input id="aRet2" type="number" step="0.5" value="8"></label>
+    <label class="f"><span>Safe withdrawal rate (%)</span><input id="aSwr" type="number" step="0.1" value="3.5"></label>
+    <label class="f"><span>Barista: part-time income covers (% of expenses)</span><input id="aBarista" type="number" step="5" value="40"></label>
+    <label class="f"><span>Healthcare buffer at FIRE (₹ lakh, today's)</span><input id="aHealth" type="number" step="1" value="25"></label>
+   </div>
+   <p class="hint">Why 3.5% and not the US 4%? Indian inflation runs higher, retirements here are longer, and healthcare inflates at 10–14%. 3.5% ≈ 28.6× annual expenses; 3% ≈ 33×.</p>
+  </div>
+  <div class="row">
+   <button class="btn" onclick="savePlan()">💾 Save plan & see my dashboard</button>
+   <button class="btn ghost" onclick="go('loans')">Add loans first</button>
+  </div>
+ </section>
+
+ <!-- ================= LOANS ================= -->
+ <section class="view" id="v-loans">
+  <div class="card glow">
+   <span class="tag">Debt</span>
+   <h1>Loans & EMIs</h1>
+   <p>Loans don't stop FIRE — they just need a sequence. Add each one; the app frees up each EMI for investing the month it ends and shows you avalanche vs snowball order.</p>
+  </div>
+  <div class="card">
+   <div class="grid">
+    <label class="f"><span>Loan name</span><input id="lName" placeholder="Home loan / Car / Credit card"></label>
+    <label class="f"><span>Type</span><select id="lType"><option>Home</option><option>Education</option><option>Car</option><option>Personal</option><option>Credit card</option><option>Gold</option><option>Other</option></select></label>
+    <label class="f"><span>Outstanding (₹)</span><input id="lBal" type="number" step="1000" placeholder="2500000"></label>
+    <label class="f"><span>Interest rate (% p.a.)</span><input id="lRate" type="number" step="0.1" placeholder="8.5"></label>
+    <label class="f"><span>EMI per month (₹)</span><input id="lEmi" type="number" step="100" placeholder="21000"></label>
+   </div>
+   <button class="btn sm" onclick="addLoan()">＋ Add loan</button>
+  </div>
+  <div class="card"><h3>Your loans</h3><div id="loanList"><p class="hint">No loans added. Lucky you — or add them above.</p></div></div>
+  <div class="card" id="loanStrategy"></div>
+  <div class="card">
+   <h3>Prepay vs invest?</h3>
+   <p>Rule of thumb for India: clear anything above ~12% (cards, personal loans) before investing. For home/education loans at 7–9% with tax benefits, run EMI + SIP in parallel — long-term equity has historically returned more than the loan costs, though with risk.</p>
+   <div class="grid">
+    <label class="f"><span>Extra ₹/month available</span><input id="ppExtra" type="number" value="10000" step="500"></label>
+    <label class="f"><span>Loan rate (%)</span><input id="ppRate" type="number" value="8.5" step="0.1"></label>
+    <label class="f"><span>Expected investment return (%)</span><input id="ppRet" type="number" value="11" step="0.5"></label>
+    <label class="f"><span>Years</span><input id="ppYrs" type="number" value="10"></label>
+   </div>
+   <button class="btn sm" onclick="prepayCompare()">Compare</button>
+   <div id="ppOut" style="margin-top:10px"></div>
+  </div>
+ </section>
+
+ <!-- ================= TRACK ================= -->
+ <section class="view" id="v-track">
+  <div class="card glow">
+   <span class="tag">Step 3 · Track</span>
+   <h1>Month by month</h1>
+   <p id="trackIntro">Log each month's income, spending and investments. Your corpus and freedom date update automatically.</p>
+  </div>
+  <div class="card" id="trackForm">
+   <div class="grid">
+    <label class="f"><span>Month</span><input id="tMonth" type="month"></label>
+    <label class="f"><span>Income received (₹)</span><input id="tIncome" type="number" step="500"></label>
+    <label class="f"><span>Total spent (₹, incl. EMIs)</span><input id="tSpent" type="number" step="500"></label>
+    <label class="f"><span>Invested this month (₹)</span><input id="tInv" type="number" step="500"></label>
+    <label class="f"><span>Actual corpus now (₹, optional)</span><input id="tCorpus" type="number" step="1000" placeholder="leave blank to auto-estimate"></label>
+    <label class="f"><span>Note / win of the month</span><input id="tNote" placeholder="Closed the card. Started ₹5k SIP."></label>
+   </div>
+   <button class="btn" onclick="logMonth()">✅ Log month</button>
+  </div>
+  <div class="card">
+   <h3>📊 Your months</h3>
+   <div class="grid" id="trackStats"></div>
+   <div id="monthList"></div>
+  </div>
+ </section>
+
+ <!-- ================= CALCULATOR ================= -->
+ <section class="view" id="v-calc">
+  <div class="card glow">
+   <span class="tag">Tool</span>
+   <h1>FIRE Calculator</h1>
+   <p>No sign-up, nothing saved. Play with the numbers to understand how inflation, withdrawal rate and time change your target.</p>
+  </div>
+  <div class="card">
+   <div class="grid">
+    <label class="f"><span>Current age</span><input id="cAge" type="number" value="28"></label>
+    <label class="f"><span>FIRE age</span><input id="cFireAge" type="number" value="45"></label>
+    <label class="f"><span>Monthly expenses today (₹)</span><input id="cExp" type="number" value="50000" step="1000"></label>
+    <label class="f"><span>Current corpus (₹)</span><input id="cCorp" type="number" value="500000" step="10000"></label>
+    <label class="f"><span>Monthly investment (₹)</span><input id="cSip" type="number" value="25000" step="1000"></label>
+    <label class="f"><span>Yearly SIP step-up (%)</span><input id="cStep" type="number" value="10"></label>
+    <label class="f"><span>Inflation (%)</span><input id="cInf" type="number" value="6" step="0.5"></label>
+    <label class="f"><span>Return before FIRE (%)</span><input id="cRet" type="number" value="11" step="0.5"></label>
+    <label class="f"><span>Safe withdrawal rate (%)</span><input id="cSwr" type="number" value="3.5" step="0.1"></label>
+   </div>
+   <button class="btn" onclick="runCalc()">Calculate</button>
+  </div>
+  <div id="calcOut"></div>
+ </section>
+
+ <!-- ================= LEARN ================= -->
+ <section class="view" id="v-learn">
+  <div class="card glow">
+   <span class="tag">Guide</span>
+   <h1>Everything about FIRE — for India</h1>
+   <p>Read top to bottom once; come back whenever you need a reminder. Written for anyone — no finance background needed.</p>
+  </div>
+  <div class="card lesson" id="lessons"></div>
+ </section>
+
+ <!-- ================= MORE ================= -->
+ <section class="view" id="v-more">
+  <div class="card glow"><span class="tag">You</span><h1>Breathe. You're on your way.</h1>
+   <div class="breath">breathe</div>
+   <p style="text-align:center">In for 4 · hold for 4 · out for 6. Money anxiety shrinks when the plan is written down. Yours is.</p>
+  </div>
+  <div class="card"><h3>💬 Daily spark</h3><div class="affirm" id="affirm2"></div><button class="btn sm ghost" onclick="newAffirm()">Another one</button></div>
+  <div class="card">
+   <h3>Backup & data</h3>
+   <p>Your data lives only on this device (browser storage). Export a backup before changing phones.</p>
+   <div class="row">
+    <button class="btn sm" onclick="exportData()">⬇ Export backup (JSON)</button>
+    <label class="btn sm ghost">⬆ Import backup<input type="file" accept="application/json" style="display:none" onchange="importData(this)"></label>
+    <button class="btn sm danger" onclick="resetAll()">Reset everything</button>
+   </div>
+  </div>
+  <div class="card"><h3>About</h3><p><b>instinct.FIRE</b> · Plan your life with the FIRE framework, in Indian rupees. Works offline. This is an educational tool, not investment advice — returns are assumptions, not promises. Talk to a SEBI-registered advisor for personal decisions.</p></div>
+ </section>
+</div>
+
+<nav>
+ <div class="brand">instinct.FIRE</div>
+ <button data-v="home" class="on"><span class="ic">🏠</span>Home</button>
+ <button data-v="quiz"><span class="ic">🧭</span>Discover</button>
+ <button data-v="plan"><span class="ic">🗺️</span>Plan</button>
+ <button data-v="track"><span class="ic">📅</span>Track</button>
+ <button data-v="loans"><span class="ic">🏦</span>Loans</button>
+ <button data-v="calc"><span class="ic">🧮</span>Calc</button>
+ <button data-v="learn"><span class="ic">📖</span>Learn</button>
+ <button data-v="more"><span class="ic">✨</span>More</button>
+</nav>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===================== STATE ===================== */
+const KEY='instinctFIRE.v1';
+const EXP_CATS=[['rent','Rent / housing'],['food','Food & groceries'],['transport','Transport & fuel'],['utilities','Bills, phone, internet'],['health','Health & insurance'],['education','Education / kids'],['lifestyle','Eating out, fun, travel'],['family','Family support'],['other','Everything else']];
+const CORP_CATS=[['epf','EPF / VPF'],['ppf','PPF'],['nps','NPS'],['mf','Mutual funds / SIPs'],['stocks','Stocks / ETFs'],['fd','FD / RD / bonds'],['gold','Gold / SGB'],['cash','Savings / emergency fund'],['other','Other']];
+const TYPES={
+ lean:{name:'Lean FIRE',mult:0.75,color:'mint',desc:'Minimalist, low-cost life. Smallest corpus, fastest exit. Suits tier-2/3 cities, single people, or anyone who truly enjoys simple living.'},
+ regular:{name:'Regular FIRE',mult:1,color:'gold',desc:'Keep today\'s lifestyle, just without the job. The classic version.'},
+ fat:{name:'Fat FIRE',mult:1.6,color:'ember',desc:'Retire with room to spare — travel, help family, private healthcare, no spreadsheets at dinner. Bigger number, longer climb, high earners.'},
+ coast:{name:'Coast FIRE',mult:1,color:'sky',desc:'Front-load investing now so compounding finishes the job by a normal retirement age. Then you only need to earn your expenses — switch to work you love.'},
+ barista:{name:'Barista FIRE',mult:1,color:'rose',desc:'Semi-retire early: a part-time job or small business covers part of your expenses; the corpus covers the rest.'},
+ slow:{name:'Slow FIRE',mult:1,color:'lilac',desc:'Aim for FI around 50–55 with a 25–35% savings rate and a life you enjoy along the way. Sustainable for families with EMIs and parents to support.'}
+};
+let S=load();
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s)return s}catch(e){}return{plan:null,loans:[],months:[],quiz:null,startYM:null}}
+function save(){localStorage.setItem(KEY,JSON.stringify(S))}
+/* ===================== HELPERS ===================== */
+const fmt=n=>{n=Math.round(n||0);const a=Math.abs(n);let s;if(a>=1e7)s=(a/1e7).toFixed(2)+' Cr';else if(a>=1e5)s=(a/1e5).toFixed(2)+' L';else s=a.toLocaleString('en-IN');return (n<0?'-':'')+'₹'+s};
+const full=n=>'₹'+Math.round(n||0).toLocaleString('en-IN');
+const $=id=>document.getElementById(id);
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500)}
+function ymAdd(ym,k){const[y,m]=ym.split('-').map(Number);const d=new Date(y,m-1+k,1);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')}
+function ymLabel(ym){const[y,m]=ym.split('-');return new Date(y,m-1,1).toLocaleString('en-IN',{month:'short',year:'numeric'})}
+function thisYM(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')}
+function loanMonths(l){const r=l.rate/1200;if(l.emi<=l.bal*r)return 600;return Math.ceil(-Math.log(1-r*l.bal/l.emi)/Math.log(1+r))}
+function loanInterest(l){return loanMonths(l)*l.emi-l.bal}
+/* ===================== NAV ===================== */
+function go(v){document.querySelectorAll('.view').forEach(x=>x.classList.remove('on'));$('v-'+v).classList.add('on');document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));window.scrollTo({top:0,behavior:'smooth'});if(v==='home')renderHome();if(v==='quiz')renderQuiz();if(v==='plan')fillPlan();if(v==='loans')renderLoans();if(v==='track')renderTrack();if(v==='more'){newAffirm()}}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>go(b.dataset.v));
+/* ===================== AFFIRMATIONS ===================== */
+const AFF=[
+ ['Breathe. Every SIP is a brick in a house called freedom.','— you are building it right now'],
+ ['You don\'t need to be rich. You need to be free. Those are different numbers.',''],
+ ['The best time to start was ten years ago. The second best time is this month\'s salary.',''],
+ ['Compounding is quiet for years and then very loud. Stay long enough to hear it.',''],
+ ['Your FIRE number is not far. It is just unfinished.',''],
+ ['Rupees you keep today become hours you own tomorrow.',''],
+ ['Progress, not perfection. One logged month beats a perfect plan never followed.',''],
+ ['Inflation is the tide. Your savings rate is the boat. Keep rowing.',''],
+ ['You are closer than you were last month. That is the whole game.',''],
+ ['A loan closed is a salary raise you gave yourself.',''],
+ ['Slow is smooth. Smooth is fast. Keep the SIP running.',''],
+ ['Freedom is a number you can see. Look at it, then take one step.',''],
+ ['You have already done the hardest part: you decided.',''],
+ ['Markets wobble. Plans hold. You hold the plan.',''],
+ ['Breathe in. Breathe out. Your future self is grateful you are here.','']];
+function pickAff(){const d=new Date();const i=(d.getFullYear()*372+d.getMonth()*31+d.getDate())%AFF.length;return AFF[i]}
+function newAffirm(){const a=AFF[Math.floor(Math.random()*AFF.length)];$('affirm2').innerHTML=a[0]+(a[1]?'<small>'+a[1]+'</small>':'')}
+/* ===================== QUIZ ===================== */
+const QUESTIONS=[
+ {q:'How do you feel about your work today?',opts:[['I love it — I just want a safety net','coast'],['It\'s fine, but I\'d like the option to stop','regular'],['I want out as early as humanly possible','lean'],['I\'d happily do it part-time forever','barista']]},
+ {q:'Which life after FIRE sounds like you?',opts:[['Small flat, simple food, long walks, few wants','lean'],['Exactly today\'s lifestyle, minus the alarm clock','regular'],['Travel, upgrades, generosity, zero money worries','fat'],['A café, a studio, a small venture — work on my terms','barista']]},
+ {q:'Your savings rate right now?',opts:[['Under 15%','slow'],['15–30%','regular'],['30–50%','lean'],['Over 50%','fat']]},
+ {q:'Who depends on your income?',opts:[['Just me','lean'],['Partner','regular'],['Kids / planning for kids','slow'],['Parents and kids both','slow']]},
+ {q:'When would you like work to become optional?',opts:[['Within 10 years','lean'],['10–15 years','regular'],['15–25 years','slow'],['At a normal age — I just want to stop stressing','coast']]},
+ {q:'How do you react when markets fall 30%?',opts:[['I buy more','fat'],['I hold and don\'t look','regular'],['I get anxious but stay','slow'],['I\'d want some income to feel safe','barista']]},
+ {q:'Your income is best described as…',opts:[['High and growing fast','fat'],['Steady, average hikes','regular'],['Irregular / freelance / business','barista'],['Early career, modest','coast']]}];
+let qi=0,qa=[];
+function renderQuiz(){qi=0;qa=[];showQ()}
+function showQ(){$('qBar').style.width=(qi/QUESTIONS.length*100)+'%';if(qi>=QUESTIONS.length)return quizResult();const Q=QUESTIONS[qi];$('quizCard').innerHTML='<span class="tag">Question '+(qi+1)+' of '+QUESTIONS.length+'</span><h2>'+Q.q+'</h2>'+Q.opts.map((o,i)=>'<label class="opt" onclick="pick('+i+')">'+o[0]+'</label>').join('')+(qi>0?'<button class="btn sm ghost" style="margin-top:8px" onclick="qi--;qa.pop();showQ()">← Back</button>':'')}
+function pick(i){qa.push(QUESTIONS[qi].opts[i][1]);qi++;showQ()}
+function quizResult(){const sc={};qa.forEach(t=>sc[t]=(sc[t]||0)+1);const order=Object.keys(TYPES).sort((a,b)=>(sc[b]||0)-(sc[a]||0));const win=order[0],second=order[1];S.quiz={answers:qa,result:win};save();$('qBar').style.width='100%';
+ const T=TYPES[win];$('quizCard').innerHTML='<span class="tag">Your match</span><h1 class="big" style="font-size:2rem">'+T.name+'</h1><p>'+T.desc+'</p><p class="hint">Runner-up: <b>'+TYPES[second].name+'</b> — '+TYPES[second].desc+'</p><h3 style="margin-top:14px">All six, quickly</h3>'+Object.keys(TYPES).map(k=>'<label class="opt '+(k===win?'sel':'')+'" onclick="chooseType(\''+k+'\')"><b>'+TYPES[k].name+'</b> <span class="pill '+TYPES[k].color+'">'+(TYPES[k].mult===1?'1×':TYPES[k].mult+'×')+' expenses</span><br><span class="hint">'+TYPES[k].desc+'</span></label>').join('')+'<div class="row" style="margin-top:12px"><button class="btn" onclick="chooseType(\''+win+'\')">Go with '+T.name+' → build my plan</button><button class="btn ghost" onclick="renderQuiz()">Retake</button></div>'}
+function chooseType(k){S.chosenType=k;save();go('plan');$('pType').value=k;toast(TYPES[k].name+' selected')}
+/* ===================== PLAN FORM ===================== */
+function buildGrids(){$('expGrid').innerHTML=EXP_CATS.map(c=>'<label class="f"><span>'+c[1]+'</span><input type="number" step="500" min="0" id="e_'+c[0]+'" value="0" oninput="sumExp()"></label>').join('');$('corpGrid').innerHTML=CORP_CATS.map(c=>'<label class="f"><span>'+c[1]+'</span><input type="number" step="1000" min="0" id="c_'+c[0]+'" value="0" oninput="sumCorp()"></label>').join('')}
+function sumExp(){let t=0;EXP_CATS.forEach(c=>t+=+$('e_'+c[0]).value||0);$('expTotal').textContent=full(t);return t}
+function sumCorp(){let t=0;CORP_CATS.forEach(c=>t+=+$('c_'+c[0]).value||0);$('corpTotal').textContent=full(t);return t}
+function fillPlan(){const p=S.plan;if(S.chosenType)$('pType').value=S.chosenType;if(!p){sumExp();sumCorp();return}
+ $('pName').value=p.name||'';$('pAge').value=p.age;$('pFireAge').value=p.fireAge;$('pLife').value=p.life;$('pType').value=p.type;$('pDeps').value=p.deps;$('pIncome').value=p.income;$('pIncome2').value=p.income2;$('pGrowth').value=p.growth;$('pEpfM').value=p.epfM;
+ EXP_CATS.forEach(c=>$('e_'+c[0]).value=p.exp[c[0]]||0);CORP_CATS.forEach(c=>$('c_'+c[0]).value=p.corp[c[0]]||0);
+ $('aInf').value=p.a.inf;$('aRet').value=p.a.ret;$('aRet2').value=p.a.ret2;$('aSwr').value=p.a.swr;$('aBarista').value=p.a.barista;$('aHealth').value=p.a.health;sumExp();sumCorp()}
+function savePlan(){const exp={},corp={};EXP_CATS.forEach(c=>exp[c[0]]=+$('e_'+c[0]).value||0);CORP_CATS.forEach(c=>corp[c[0]]=+$('c_'+c[0]).value||0);
+ const p={name:$('pName').value.trim(),age:+$('pAge').value,fireAge:+$('pFireAge').value,life:+$('pLife').value,type:$('pType').value,deps:$('pDeps').value,income:+$('pIncome').value||0,income2:+$('pIncome2').value||0,growth:+$('pGrowth').value||0,epfM:+$('pEpfM').value||0,exp,corp,a:{inf:+$('aInf').value,ret:+$('aRet').value,ret2:+$('aRet2').value,swr:+$('aSwr').value,barista:+$('aBarista').value,health:+$('aHealth').value}};
+ if(p.fireAge<=p.age){toast('FIRE age must be after your current age');return}
+ if(sumExp()<=0){toast('Add your monthly expenses first');return}
+ S.plan=p;S.chosenType=p.type;if(!S.startYM)S.startYM=thisYM();save();toast('Plan saved 🔥');go('home')}
+/* ===================== ENGINE ===================== */
+function totals(p){let e=0,c=0;for(const k in p.exp)e+=p.exp[k];for(const k in p.corp)c+=p.corp[k];return{exp:e,corp:c}}
+function project(p,loans,months){
+ const t=totals(p),inf=p.a.inf/100,r=p.a.ret/100,rm=Math.pow(1+r,1/12)-1,gm=Math.pow(1+p.growth/100,1/12)-1,swr=p.a.swr/100;
+ const T=TYPES[p.type];let mult=T.mult;if(p.type==='barista')mult=1-p.a.barista/100;
+ const yrs=p.fireAge-p.age,horizon=Math.max(1,yrs)*12;
+ const healthBuf=p.a.health*1e5*Math.pow(1+inf,yrs);
+ const annualAtFire=t.exp*12*mult*Math.pow(1+inf,yrs);
+ const fireNumber=annualAtFire/swr+healthBuf;
+ const coastNumber=fireNumber/Math.pow(1+r,yrs);
+ // effective corpus today from logs
+ const startYM=S.startYM||thisYM();const now=thisYM();
+ let corpus=t.corp;let lastLog=null;
+ const sorted=[...months].sort((a,b)=>a.ym.localeCompare(b.ym));
+ sorted.forEach(m=>{if(m.corpus){corpus=m.corpus;lastLog=m.ym}});
+ if(!lastLog){ // grow initial corpus + logged investments to now
+   let k=0;const monthsSince=Math.max(0,monthDiff(startYM,now));corpus=t.corp*Math.pow(1+rm,monthsSince);sorted.forEach(m=>{const d=Math.max(0,monthDiff(m.ym,now));corpus+=(m.invested||0)*Math.pow(1+rm,d)});
+ } else {const d=Math.max(0,monthDiff(lastLog,now));corpus=corpus*Math.pow(1+rm,d);sorted.filter(m=>m.ym>lastLog).forEach(m=>{const d2=Math.max(0,monthDiff(m.ym,now));corpus+=(m.invested||0)*Math.pow(1+rm,d2)})}
+ // monthly surplus
+ const emiTotal=loans.reduce((s,l)=>s+l.emi,0);
+ let income=p.income+p.income2,surplus=income-t.exp-emiTotal+p.epfM;
+ const loanEnd=loans.map(l=>loanMonths(l));
+ // simulate forward from now
+ const tl=[];let c=corpus,inc=income,cross=null,target=0;
+ for(let m=0;m<=Math.max(horizon,(p.fireAge-p.age)*12)+360;m++){
+   const yearsFromNow=m/12;const ageNow=p.age+yearsFromNow;
+   const tgt=(t.exp*12*mult*Math.pow(1+inf,yearsFromNow))/swr+p.a.health*1e5*Math.pow(1+inf,yearsFromNow);
+   if(m<=horizon+120)tl.push({m,corpus:c,target:tgt,ym:ymAdd(now,m)});
+   if(cross===null&&c>=tgt){cross=m}
+   if(cross!==null&&m>horizon+120)break;
+   // next month
+   let emi=0;loans.forEach((l,i)=>{if(m<loanEnd[i])emi+=l.emi});
+   const sp=Math.max(0,inc-t.exp*Math.pow(1+inf,yearsFromNow)-emi+p.epfM*Math.pow(1+gm,m));
+   c=c*(1+rm)+sp;inc*=(1+gm);
+   if(m>720)break;
+ }
+ const yearsToFire=cross===null?null:cross/12;
+ // required flat SIP to hit fireNumber exactly at target age
+ const need=fireNumber-corpus*Math.pow(1+rm,horizon);const annuity=(Math.pow(1+rm,horizon)-1)/rm;
+ const reqSip=Math.max(0,need/annuity);
+ const savingsRate=income>0?(surplus/income):0;
+ return{fireNumber,coastNumber,annualAtFire,corpus,surplus,emiTotal,income,savingsRate,reqSip,yearsToFire,cross,tl,horizon,healthBuf,mult,leanNumber:(t.exp*12*0.75*Math.pow(1+inf,yrs))/swr,fatNumber:(t.exp*12*1.6*Math.pow(1+inf,yrs))/swr,regularNumber:(t.exp*12*Math.pow(1+inf,yrs))/swr};
+}
+function monthDiff(a,b){const[y1,m1]=a.split('-').map(Number),[y2,m2]=b.split('-').map(Number);return (y2-y1)*12+(m2-m1)}
+/* ===================== HOME RENDER ===================== */
+function renderHome(){const p=S.plan;$('homeEmpty').style.display=p?'none':'block';$('homePlan').style.display=p?'block':'none';if(!p)return;
+ const a=pickAff();$('affirmBox').innerHTML=a[0]+(a[1]?'<small>'+a[1]+'</small>':'')+'<span class="br" onclick="go(\'more\')">breathe →</span>';
+ const R=project(p,S.loans,S.months);const pct=Math.min(100,R.corpus/R.fireNumber*100);
+ $('hFireType').textContent=TYPES[p.type].name+(p.name?' · '+p.name:'');$('hFireNumber').textContent=fmt(R.fireNumber);
+ $('hFireSub').innerHTML='Your FIRE number at age '+p.fireAge+' — '+fmt(R.annualAtFire/12)+'/month in '+(new Date().getFullYear()+p.fireAge-p.age)+' rupees, incl. a '+fmt(R.healthBuf)+' health buffer.'+(p.type==='coast'?' <b>Coast number today: '+fmt(R.coastNumber)+'</b>':'');
+ $('hBar').style.width=pct+'%';$('hPct').textContent=pct.toFixed(1)+'% there';$('hGap').textContent=fmt(Math.max(0,R.fireNumber-R.corpus))+' to go';
+ const fd=R.cross===null?'Beyond 60 yrs':ymLabel(ymAdd(thisYM(),R.cross));$('hDate').textContent=fd;
+ $('hYears').textContent=R.yearsToFire===null?'—':(Math.floor(R.yearsToFire)+'y '+Math.round((R.yearsToFire%1)*12)+'m');
+ $('hRate').textContent=(R.savingsRate*100).toFixed(0)+'%';$('hSip').textContent=fmt(R.reqSip);$('hNow').textContent=fmt(R.surplus);$('hCorpus').textContent=fmt(R.corpus);
+ drawFlame(pct);drawLadder(pct,R,p);drawChart(R);
+ // insights
+ const ins=[];const ageAtCross=R.cross===null?null:p.age+R.cross/12;
+ if(R.cross!==null&&ageAtCross<=p.fireAge)ins.push('🎉 At your current pace you reach '+TYPES[p.type].name+' at about age <b>'+ageAtCross.toFixed(1)+'</b> — '+(p.fireAge-ageAtCross).toFixed(1)+' years ahead of your target.');
+ else if(R.cross!==null)ins.push('⏳ At today\'s pace you get there around age <b>'+ageAtCross.toFixed(1)+'</b>. To hit '+p.fireAge+' exactly, invest <b>'+fmt(R.reqSip)+'/month</b> (you currently have '+fmt(R.surplus)+' free).');
+ else ins.push('⚠️ Your current surplus doesn\'t reach the number within 60 years. Raise income, trim the biggest expense line, or pick Slow/Barista/Coast FIRE.');
+ if(R.savingsRate<0.2)ins.push('💡 Savings rate is '+(R.savingsRate*100).toFixed(0)+'%. Every 10-point rise cuts years off the climb — the single most powerful lever you control.');
+ else if(R.savingsRate>=0.5)ins.push('🔥 A '+(R.savingsRate*100).toFixed(0)+'% savings rate is elite. Protect it with an emergency fund of 6 months and a term + health cover.');
+ if(S.loans.length){const hi=S.loans.filter(l=>l.rate>=12);if(hi.length)ins.push('🏦 You have '+hi.length+' loan(s) above 12%. Clearing them first is a guaranteed '+Math.max(...hi.map(l=>l.rate))+'% return — better than most investments.');else ins.push('🏦 Your loans are all under 12%. Pay EMIs on schedule and keep investing in parallel; the app adds each EMI to your SIP the month it ends.')}
+ ins.push('📏 Lean would need <b>'+fmt(R.leanNumber+R.healthBuf)+'</b>, Regular <b>'+fmt(R.regularNumber+R.healthBuf)+'</b>, Fat <b>'+fmt(R.fatNumber+R.healthBuf)+'</b>. Coast number today: <b>'+fmt(R.coastNumber)+'</b>.');
+ const lastMonth=S.months.length?S.months[S.months.length-1].ym:null;const cur=thisYM();if(lastMonth!==cur)ins.push('📅 '+ymLabel(cur)+' isn\'t logged yet. Two minutes now keeps the chart honest.');
+ $('insightCard').innerHTML='<h3>🧠 Insights</h3>'+ins.map(i=>'<p>'+i+'</p>').join('');
+}
+function drawFlame(pct){const s=$('flame');const h=150*pct/100;s.innerHTML=`<defs><linearGradient id="fg" x1="0" x2="0" y1="1" y2="0"><stop offset="0" stop-color="#ff3d81"/><stop offset=".5" stop-color="#ff6b35"/><stop offset="1" stop-color="#ffc857"/></linearGradient><clipPath id="cp"><rect x="0" y="${160-h}" width="120" height="${h}"/></clipPath><filter id="gl"><feGaussianBlur stdDeviation="3"/></filter></defs>
+ <path d="M60 8 C 70 40, 100 55, 98 95 C 97 130, 78 152, 60 152 C 42 152, 23 130, 22 95 C 21 70, 40 60, 44 40 C 48 56, 56 60, 60 58 C 58 40, 56 25, 60 8 Z" fill="#241e4f" stroke="rgba(255,255,255,.12)"/>
+ <path d="M60 8 C 70 40, 100 55, 98 95 C 97 130, 78 152, 60 152 C 42 152, 23 130, 22 95 C 21 70, 40 60, 44 40 C 48 56, 56 60, 60 58 C 58 40, 56 25, 60 8 Z" fill="url(#fg)" clip-path="url(#cp)" filter="url(#gl)"/>
+ <path d="M60 8 C 70 40, 100 55, 98 95 C 97 130, 78 152, 60 152 C 42 152, 23 130, 22 95 C 21 70, 40 60, 44 40 C 48 56, 56 60, 60 58 C 58 40, 56 25, 60 8 Z" fill="url(#fg)" clip-path="url(#cp)"/>
+ <path d="M60 80 C 68 95, 80 102, 78 120 C 77 138, 68 146, 60 146 C 52 146, 43 138, 42 120 C 41 105, 54 100, 60 80 Z" fill="rgba(255,255,255,${0.15+pct/300})" clip-path="url(#cp)"/>
+ <text x="60" y="100" text-anchor="middle" font-size="22" font-weight="900" fill="#fff" style="paint-order:stroke;stroke:#0f0c1d;stroke-width:4">${pct.toFixed(0)}%</text>`}
+function drawLadder(pct,R,p){const W=600,H=260;const steps=[['Start',0],['Emergency fund',8],['Coast FIRE',Math.min(99,R.coastNumber/R.fireNumber*100)],['Halfway',50],['Lean',Math.min(99,(R.leanNumber+R.healthBuf)/R.fireNumber*100)],['FIRE 🔥',100]].sort((a,b)=>a[1]-b[1]);
+ let path='M20 240 ';steps.forEach((s,i)=>{const x=20+ (s[1]/100)*(W-40);const y=240-(s[1]/100)*200;path+='L'+x+' '+y+' '});
+ const px=20+(pct/100)*(W-40),py=240-(pct/100)*200;
+ $('ladder').innerHTML=`<svg viewBox="0 0 ${W} ${H}"><defs><linearGradient id="lg" x1="0" x2="1"><stop offset="0" stop-color="#ff6b35"/><stop offset="1" stop-color="#ffc857"/></linearGradient></defs>
+ <path d="${path}" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="6" stroke-linecap="round"/>
+ <path d="${path}" fill="none" stroke="url(#lg)" stroke-width="6" stroke-linecap="round" stroke-dasharray="${pct/100*900} 2000"/>
+ ${steps.map((s,i)=>{const x=20+(s[1]/100)*(W-40),y=240-(s[1]/100)*200;const done=pct>=s[1];const up=i%2===0;return `<circle cx="${x}" cy="${y}" r="7" fill="${done?'#ffc857':'#241e4f'}" stroke="${done?'#fff':'rgba(255,255,255,.3)'}" stroke-width="2"/><text x="${x}" y="${up?y-14:y+24}" text-anchor="${i===0?'start':'middle'}" font-size="11" fill="${done?'#ffc857':'#a9a1c9'}">${s[0]} <tspan fill="#6f689a" font-size="9">${s[1].toFixed(0)}%</tspan></text>`}).join('')}
+ <circle cx="${px}" cy="${py}" r="11" fill="#ff6b35" stroke="#fff" stroke-width="3"><animate attributeName="r" values="10;13;10" dur="2s" repeatCount="indefinite"/></circle>
+ <text x="${px+16}" y="${py+5}" font-size="12" font-weight="800" fill="#fff">you · ${pct.toFixed(0)}%</text></svg>`}
+function drawChart(R){const cv=$('chart'),x=cv.getContext('2d');const W=cv.width,H=cv.height;x.clearRect(0,0,W,H);const tl=R.tl;if(!tl.length)return;const maxV=Math.max(...tl.map(t=>Math.max(t.corpus,t.target)))*1.05;const n=tl.length;const L=70,B=40,T=20,Rr=20;const X=i=>L+(i/(n-1))*(W-L-Rr),Y=v=>H-B-(v/maxV)*(H-B-T);
+ x.strokeStyle='rgba(255,255,255,.08)';x.lineWidth=1;x.fillStyle='#6f689a';x.font='12px system-ui';for(let g=0;g<=4;g++){const v=maxV*g/4,y=Y(v);x.beginPath();x.moveTo(L,y);x.lineTo(W-Rr,y);x.stroke();x.fillText(fmt(v),4,y+4)}
+ const yrStep=Math.max(1,Math.round(n/12/8));for(let i=0;i<n;i+=12*yrStep){x.fillText(tl[i].ym.slice(0,4),X(i)-14,H-12)}
+ // target
+ x.beginPath();tl.forEach((t,i)=>i?x.lineTo(X(i),Y(t.target)):x.moveTo(X(i),Y(t.target)));x.strokeStyle='#ffc857';x.lineWidth=2;x.setLineDash([6,5]);x.stroke();x.setLineDash([]);
+ // corpus area
+ const g=x.createLinearGradient(0,T,0,H-B);g.addColorStop(0,'rgba(255,107,53,.45)');g.addColorStop(1,'rgba(255,107,53,0)');x.beginPath();x.moveTo(X(0),Y(0));tl.forEach((t,i)=>x.lineTo(X(i),Y(t.corpus)));x.lineTo(X(n-1),Y(0));x.closePath();x.fillStyle=g;x.fill();
+ x.beginPath();tl.forEach((t,i)=>i?x.lineTo(X(i),Y(t.corpus)):x.moveTo(X(i),Y(t.corpus)));x.strokeStyle='#ff6b35';x.lineWidth=3;x.stroke();
+ // actuals
+ const now=thisYM();S.months.filter(m=>m.corpus).forEach(m=>{const d=monthDiff(now,m.ym);if(d<=0&&-d<n){/* past */}});
+ if(R.cross!==null&&R.cross<n){const cx=X(R.cross),cy=Y(tl[R.cross].corpus);x.beginPath();x.arc(cx,cy,8,0,7);x.fillStyle='#ffc857';x.fill();x.fillStyle='#fff';x.font='bold 13px system-ui';x.fillText('FIRE 🔥 '+tl[R.cross].ym.slice(0,4),Math.min(cx+10,W-120),cy-10)}
+ // logged corpus points
+ S.months.forEach(m=>{if(!m.corpus)return;x.beginPath();x.arc(X(0),Y(m.corpus),4,0,7);x.fillStyle='#7ef0c2';x.fill()});
+}
+/* ===================== LOANS ===================== */
+function addLoan(){const l={name:$('lName').value.trim()||$('lType').value+' loan',type:$('lType').value,bal:+$('lBal').value,rate:+$('lRate').value,emi:+$('lEmi').value};if(!(l.bal>0&&l.rate>=0&&l.emi>0)){toast('Fill balance, rate and EMI');return}if(l.emi<=l.bal*l.rate/1200){toast('EMI too small — it never covers interest');return}S.loans.push(l);save();$('lName').value='';$('lBal').value='';$('lRate').value='';$('lEmi').value='';renderLoans();toast('Loan added')}
+function delLoan(i){S.loans.splice(i,1);save();renderLoans()}
+function renderLoans(){const L=S.loans;if(!L.length){$('loanList').innerHTML='<p class="hint">No loans added. Lucky you — or add them above.</p>';$('loanStrategy').innerHTML='<h3>Strategy</h3><p>Add loans to see avalanche vs snowball order and your debt-free date.</p>';return}
+ $('loanList').innerHTML='<table><tr><th>Loan</th><th class="num">Balance</th><th class="num">Rate</th><th class="num">EMI</th><th class="num">Months left</th><th class="num">Interest left</th><th></th></tr>'+L.map((l,i)=>'<tr><td>'+l.name+'<br><span class="hint">'+l.type+'</span></td><td class="num">'+fmt(l.bal)+'</td><td class="num">'+l.rate+'%</td><td class="num">'+fmt(l.emi)+'</td><td class="num">'+loanMonths(l)+'</td><td class="num">'+fmt(loanInterest(l))+'</td><td><button class="chip" onclick="delLoan('+i+')" style="color:#ff8fab">✕</button></td></tr>').join('')+'</table>';
+ const av=[...L].sort((a,b)=>b.rate-a.rate),sn=[...L].sort((a,b)=>a.bal-b.bal);const tot=L.reduce((s,l)=>s+l.bal,0),emi=L.reduce((s,l)=>s+l.emi,0),last=Math.max(...L.map(loanMonths));
+ $('loanStrategy').innerHTML='<h3>Strategy</h3><div class="grid"><div class="stat rose"><div class="l">Total debt</div><div class="v">'+fmt(tot)+'</div></div><div class="stat ember"><div class="l">EMIs / month</div><div class="v">'+fmt(emi)+'</div></div><div class="stat mint"><div class="l">Debt-free in</div><div class="v">'+Math.floor(last/12)+'y '+(last%12)+'m</div></div></div>'+
+ '<h3 style="margin-top:12px">🏔️ Avalanche (cheapest overall)</h3><p>Pay minimums on all, throw every extra rupee at the highest rate first:</p><ol>'+av.map(l=>'<li><b>'+l.name+'</b> — '+l.rate+'%</li>').join('')+'</ol>'+
+ '<h3>⛄ Snowball (fastest wins)</h3><p>Smallest balance first — momentum and morale:</p><ol>'+sn.map(l=>'<li><b>'+l.name+'</b> — '+fmt(l.bal)+'</li>').join('')+'</ol><p class="hint">In India both usually start with the credit card (36–42% APR + GST on interest). The EMI from a closed loan goes straight into your SIP — the app already assumes this in your projection.</p>'}
+function prepayCompare(){const e=+$('ppExtra').value,r=+$('ppRate').value/1200,i=+$('ppRet').value/1200,n=+$('ppYrs').value*12;const fvInv=e*((Math.pow(1+i,n)-1)/i);const fvPre=e*((Math.pow(1+r,n)-1)/r);const diff=fvInv-fvPre;$('ppOut').innerHTML='<div class="grid"><div class="stat sky"><div class="l">Invest it: value in '+(n/12)+'y</div><div class="v">'+fmt(fvInv)+'</div></div><div class="stat gold"><div class="l">Prepay: interest + principal saved (equiv.)</div><div class="v">'+fmt(fvPre)+'</div></div></div><p>'+(diff>0?'Investing comes out ahead by <b>'+fmt(diff)+'</b> — <i>if</i> the return actually arrives. Prepaying is a guaranteed '+$('ppRate').value+'%. Many people do 50/50 and sleep well.':'Prepaying wins by <b>'+fmt(-diff)+'</b>. When the loan rate beats expected returns, kill the loan.')+'</p>'}
+/* ===================== TRACK ===================== */
+function renderTrack(){if(!S.plan){$('trackIntro').innerHTML='Save a plan first — then tracking starts from this month.';$('trackForm').style.display='none';$('monthList').innerHTML='';$('trackStats').innerHTML='';return}$('trackForm').style.display='block';
+ const p=S.plan,t=totals(p);const cur=thisYM();const existing=S.months.find(m=>m.ym===$('tMonth').value);if(!$('tMonth').value)$('tMonth').value=cur;
+ if(!$('tIncome').value)$('tIncome').value=p.income+p.income2;if(!$('tSpent').value)$('tSpent').value=t.exp+S.loans.reduce((s,l)=>s+l.emi,0);
+ const ms=[...S.months].sort((a,b)=>b.ym.localeCompare(a.ym));
+ const avgRate=ms.length?ms.reduce((s,m)=>s+(m.income?m.invested/m.income:0),0)/ms.length:0;const totInv=ms.reduce((s,m)=>s+(m.invested||0),0);const streak=streakCount();
+ $('trackStats').innerHTML='<div class="stat mint"><div class="l">Months logged</div><div class="v">'+ms.length+'</div></div><div class="stat gold"><div class="l">Streak</div><div class="v">'+streak+' 🔥</div></div><div class="stat ember"><div class="l">Invested so far</div><div class="v">'+fmt(totInv)+'</div></div><div class="stat sky"><div class="l">Avg savings rate</div><div class="v">'+(avgRate*100).toFixed(0)+'%</div></div>';
+ // timeline list: show next 3 pending + logged
+ const start=S.startYM||cur;let html='';const horizon=(p.fireAge-p.age)*12;const R=project(p,S.loans,S.months);
+ for(let k=0;k<Math.min(horizon,3);k++){const ym=ymAdd(cur,k);if(S.months.find(m=>m.ym===ym))continue;html+='<div class="month '+(ym===cur?'cur':'')+'"><span class="dot"></span><b>'+ymLabel(ym)+'</b><span class="hint">'+(ym===cur?'this month — log it':'upcoming')+'</span></div>'}
+ html+=ms.map(m=>{const rate=m.income?Math.round(m.invested/m.income*100):0;return '<div class="month done"><span class="dot"></span><b>'+ymLabel(m.ym)+'</b><span class="pill mint">'+rate+'% saved</span><span class="pill">'+fmt(m.invested)+'</span>'+(m.note?'<span class="hint">“'+m.note+'”</span>':'')+'<button class="chip" style="color:#ff8fab" onclick="delMonth(\''+m.ym+'\')">✕</button></div>'}).join('');
+ const fireYM=ymAdd(start,horizon);html+='<div class="month"><span class="dot" style="background:#ff6b35"></span><b>'+ymLabel(fireYM)+' — target FIRE month</b><span class="hint">'+Math.max(0,monthDiff(cur,fireYM))+' months away</span></div>';
+ $('monthList').innerHTML=html}
+function streakCount(){let s=0,ym=thisYM();const set=new Set(S.months.map(m=>m.ym));if(!set.has(ym))ym=ymAdd(ym,-1);while(set.has(ym)){s++;ym=ymAdd(ym,-1)}return s}
+function logMonth(){const ym=$('tMonth').value;if(!ym){toast('Pick a month');return}const m={ym,income:+$('tIncome').value||0,spent:+$('tSpent').value||0,invested:+$('tInv').value||0,corpus:+$('tCorpus').value||0,note:$('tNote').value.trim()};S.months=S.months.filter(x=>x.ym!==ym);S.months.push(m);S.months.sort((a,b)=>a.ym.localeCompare(b.ym));save();$('tInv').value='';$('tCorpus').value='';$('tNote').value='';const rate=m.income?m.invested/m.income:0;toast(rate>=0.3?'Logged. '+(rate*100).toFixed(0)+'% saved — that\'s the way 🔥':'Logged. Every month counts 🌱');renderTrack()}
+function delMonth(ym){S.months=S.months.filter(x=>x.ym!==ym);save();renderTrack()}
+/* ===================== CALCULATOR ===================== */
+function runCalc(){const age=+$('cAge').value,fa=+$('cFireAge').value,exp=+$('cExp').value,corp=+$('cCorp').value,sip=+$('cSip').value,step=+$('cStep').value/100,inf=+$('cInf').value/100,ret=+$('cRet').value/100,swr=+$('cSwr').value/100;const yrs=fa-age;if(yrs<=0){toast('FIRE age must be later');return}
+ const annualFuture=exp*12*Math.pow(1+inf,yrs);const base=annualFuture/swr;const rm=Math.pow(1+ret,1/12)-1;
+ // corpus at FIRE with step-up SIP
+ let c=corp,s=sip,cross=null;for(let m=0;m<yrs*12;m++){c=c*(1+rm)+s;if((m+1)%12===0)s*=(1+step)}
+ // when does it cross (keep going)
+ let c2=corp,s2=sip;for(let m=0;m<=600;m++){const tgt=exp*12*Math.pow(1+inf,m/12)/swr;if(c2>=tgt){cross=m;break}c2=c2*(1+rm)+s2;if((m+1)%12===0)s2*=(1+step)}
+ const annuity=(Math.pow(1+rm,yrs*12)-1)/rm;const reqFlat=Math.max(0,(base-corp*Math.pow(1+rm,yrs*12))/annuity);
+ const rows=[['Lean FIRE (0.75× expenses)',base*0.75,'mint'],['Regular FIRE (1×)',base,'gold'],['Fat FIRE (1.6×)',base*1.6,'ember'],['Coast FIRE — need today',base/Math.pow(1+ret,yrs),'sky'],['Barista FIRE (corpus covers 60%)',base*0.6,'rose']];
+ $('calcOut').innerHTML='<div class="card glow"><span class="tag">Your numbers</span><div class="big">'+fmt(base)+'</div><p>Regular FIRE number at age '+fa+' (future rupees). Today\'s '+full(exp)+'/month becomes <b>'+fmt(annualFuture/12)+'/month</b> after '+yrs+' years of '+(inf*100).toFixed(1)+'% inflation. Multiple: <b>'+(1/swr).toFixed(1)+'×</b> annual expenses.</p></div>'+
+ '<div class="card"><h3>By FIRE type</h3>'+rows.map(r=>'<div class="row sp" style="padding:8px 0;border-bottom:1px solid var(--line)"><span>'+r[0]+'</span><b class="pill '+r[2]+'" style="font-size:.95rem">'+fmt(r[1])+'</b></div>').join('')+'</div>'+
+ '<div class="grid"><div class="stat ember"><div class="l">Projected corpus at '+fa+'</div><div class="v">'+fmt(c)+'</div></div><div class="stat '+(c>=base?'mint':'rose')+'"><div class="l">'+(c>=base?'Surplus':'Shortfall')+'</div><div class="v">'+fmt(Math.abs(c-base))+'</div></div><div class="stat gold"><div class="l">Flat SIP needed for '+fa+'</div><div class="v">'+fmt(reqFlat)+'</div></div><div class="stat sky"><div class="l">You reach FIRE at age</div><div class="v">'+(cross===null?'60+':(age+cross/12).toFixed(1))+'</div></div></div>'+
+ '<div class="card"><h3>What moves the number most</h3><table><tr><th>If you change…</th><th class="num">FIRE number</th></tr><tr><td>SWR 4% (US rule)</td><td class="num">'+fmt(annualFuture/0.04)+'</td></tr><tr><td>SWR 3% (very safe)</td><td class="num">'+fmt(annualFuture/0.03)+'</td></tr><tr><td>Inflation 7%</td><td class="num">'+fmt(exp*12*Math.pow(1.07,yrs)/swr)+'</td></tr><tr><td>Inflation 5%</td><td class="num">'+fmt(exp*12*Math.pow(1.05,yrs)/swr)+'</td></tr><tr><td>Cut expenses 20%</td><td class="num">'+fmt(base*0.8)+'</td></tr><tr><td>FIRE 5 years later</td><td class="num">'+fmt(exp*12*Math.pow(1+inf,yrs+5)/swr)+'</td></tr></table><p class="hint">Notice: a 20% expense cut shrinks the target by 20% <i>and</i> raises what you can invest — a double win. That\'s why FIRE obsesses over the savings rate.</p></div>'}
+/* ===================== LEARN ===================== */
+const LESSONS=[
+['What FIRE actually is',`<p><b>FIRE = Financial Independence, Retire Early.</b> Financial independence is the moment your investments can pay for your life without a salary. "Retire early" is optional — most people who reach FI keep working, just on their own terms. The real product of FIRE is <b>choice</b>.</p><p>The engine is simple: <b>spend less than you earn, invest the gap, let compounding run.</b> The craft is in the three numbers: your savings rate, your expenses, and your time horizon.</p>`],
+['A short history',`<ul><li><b>1992</b> — Vicki Robin and Joe Dominguez publish <i>Your Money or Your Life</i>: every purchase costs "life energy" (hours of your life). Buy only what's worth your hours.</li><li><b>1994–1998</b> — William Bengen's "4% rule" and the Trinity Study show a US portfolio could sustain 4% inflation-adjusted withdrawals for 30 years.</li><li><b>2007–2011</b> — Blogs like Early Retirement Extreme and Mr. Money Mustache turn the maths into a movement, post-financial-crisis.</li><li><b>2010s</b> — Reddit communities, the <i>Playing with FIRE</i> documentary, and in India, r/FIREIndia, freefincal and others adapt it to rupees.</li><li><b>2020s India</b> — Demat accounts explode; NSE data shows investors under 30 went from under 24% (2020) to over 38% (2026). Surveys find 7 in 10 urban Indians want to retire before 58–60, and half of those want FIRE before 50.</li></ul>`],
+['The 4% rule — and why India uses 3–3.5%',`<p>The 4% rule says: if you withdraw 4% of your corpus in year one and raise it with inflation each year, a 50–75% equity portfolio historically lasted 30 years in the US. Flip it: <b>FIRE number = 25 × annual expenses.</b></p><p>India is different in three ways: <b>inflation is higher</b> (RBI target 4%, tolerance 2–6%; lived experience 6–7% for urban families), <b>retirements are longer</b> (FIRE at 40 means 45+ years), and <b>healthcare and education inflate at 10–14%</b>. So Indian planners use 3–3.5%, i.e. <b>28.6× to 33× annual expenses</b>, and they inflate expenses to the FIRE year first.</p><p><b>The formula:</b> Future annual expenses = today's annual expenses × (1 + inflation)<sup>years</sup>. FIRE number = Future annual expenses ÷ SWR. Example: ₹50,000/month today, FIRE in 15 years at 6% → ₹1.2 lakh/month then → ₹14.4 lakh/year → ÷ 3.5% ≈ <b>₹4.1 crore</b>.</p>`],
+['The six flavours of FIRE',`<ul><li><b>Lean FIRE</b> — frugal life, corpus ≈ 0.6–0.8× of a "normal" one. Fastest, but little slack.</li><li><b>Regular FIRE</b> — today's lifestyle continues.</li><li><b>Fat FIRE</b> — 1.5–2× expenses; luxury of not thinking about money. Needs high income or long runway.</li><li><b>Coast FIRE</b> — invest hard early until the corpus can grow by itself to the FIRE number by a normal retirement age. After that, you only need to earn what you spend. Coast number = FIRE number ÷ (1+return)<sup>years</sup>.</li><li><b>Barista FIRE</b> — part-time or passion work covers part of expenses; investments cover the rest. Great for creators, consultants, teachers.</li><li><b>Slow FIRE</b> — 25–35% savings rate, FI around 50–55, with a life you enjoy along the way. Realistic for families with EMIs and parents to support.</li></ul><p>Pick based on <b>how much you want your current lifestyle, how soon you want out, and who depends on you</b>. The Discover quiz does exactly this.</p>`],
+['The savings rate is the whole game',`<p>Your years-to-FIRE depend far more on <b>savings rate</b> than on returns. Rough guide (5% real return, starting from zero):</p><table><tr><th>Savings rate</th><th>Years to FI</th></tr><tr><td>10%</td><td>~51</td></tr><tr><td>20%</td><td>~37</td></tr><tr><td>30%</td><td>~28</td></tr><tr><td>40%</td><td>~22</td></tr><tr><td>50%</td><td>~17</td></tr><tr><td>60%</td><td>~12.5</td></tr><tr><td>70%</td><td>~8.5</td></tr></table><p>Raising your rate attacks the number from both sides: lower expenses shrink the target, higher investment reaches it faster. Hikes, bonuses and closed EMIs should go <b>mostly to investments</b> — "step-up SIP" is the Indian word for this.</p>`],
+['Order of operations in India',`<ol><li><b>Emergency fund</b> — 6 months of expenses in a liquid fund / sweep FD.</li><li><b>Protection</b> — term insurance (15–20× annual income) and a family floater health cover of at least ₹10–25 lakh. Employer cover vanishes the day you FIRE.</li><li><b>Kill expensive debt</b> — credit cards (36–42% + GST on interest), personal loans, BNPL. Anything above ~12%.</li><li><b>Capture free money</b> — EPF (8.25%, tax-free after 5 yrs), employer NPS match.</li><li><b>Invest for growth</b> — equity index funds / diversified funds via SIP (long-run 11–13% nominal), NPS equity tier, with PPF (7.1%, tax-free) as the stability layer.</li><li><b>Cheap loans run in parallel</b> — home (7.25–8.5%) and education loans: pay on schedule, invest alongside.</li><li><b>Review yearly</b> — raise SIPs with hikes, rebalance, update the plan here.</li></ol>`],
+['Where the money goes: Indian instruments',`<table><tr><th>Instrument</th><th>Typical return</th><th>Role</th><th>Tax note</th></tr><tr><td>Equity index / flexi-cap funds</td><td>11–13% (volatile)</td><td>Growth engine</td><td>LTCG 12.5% above ₹1.25L/yr</td></tr><tr><td>EPF / VPF</td><td>8.25%</td><td>Safe core, salaried</td><td>Tax-free after 5 yrs (limits apply)</td></tr><tr><td>PPF</td><td>7.1%</td><td>Stability, 15-yr lock</td><td>EEE — fully tax-free</td></tr><tr><td>NPS</td><td>9–12% equity tier</td><td>Retirement, 60% lump-sum tax-free</td><td>Extra deduction (old regime)</td></tr><tr><td>Debt funds / FDs / RBI bonds</td><td>6.5–8%</td><td>Buckets 1–2 after FIRE</td><td>Taxed at slab</td></tr><tr><td>Gold / SGB</td><td>varies</td><td>5–10% hedge</td><td>SGB interest taxable</td></tr><tr><td>Real estate (rental)</td><td>2–3% yield + appreciation</td><td>Optional; illiquid</td><td>Rent taxed at slab</td></tr></table><p class="hint">Rates as of 2026; they change. Treat them as inputs, not promises.</p>`],
+['After FIRE: the 3-bucket method',`<p>The biggest risk after you stop earning is <b>sequence-of-returns risk</b>: a market crash in your first 5–7 years of retirement forces you to sell cheap, and the portfolio never recovers. The fix is buckets:</p><ul><li><b>Bucket 1 (0–3 years)</b> — cash, liquid funds, FDs. You spend from here, never from equity during a crash.</li><li><b>Bucket 2 (3–10 years)</b> — debt funds, bonds, SCSS/RBI floating-rate bonds, conservative hybrids.</li><li><b>Bucket 3 (10+ years)</b> — equity. Refill Bucket 1 from Bucket 3 only in good years.</li></ul><p>Withdraw via SWP from equity funds (only the gain portion is taxed), keep 2 years of expenses in Bucket 1 at all times, and keep a <b>separate healthcare corpus</b> (₹25–50 lakh in today's money) on top of insurance.</p>`],
+['FIRE by generation — India',`<p><b>Gen Z (born 1997–2012):</b> Your superpower is time. ₹10,000/month from 25 at 12% ≈ ₹1.76 crore by 50; the same SIP from 35 ≈ ₹69 lakh. Start with the first salary: EPF + one index SIP + term plan. Avoid BNPL and card revolving. Learn from creators but verify with SEBI-registered advisors. Coast FIRE is your natural fit: a decade of heavy saving buys a lifetime of options.</p><p><b>Millennials (1981–1996):</b> Peak earning years with peak EMIs. Run Slow or Regular FIRE: step-up SIPs 10%/yr, parallel home loan + SIP, protect the family with term + health cover, build the kids' education fund separately so it doesn't eat the FIRE corpus.</p><p><b>Gen X (1965–1980):</b> 82% fear they'll never fully retire. Shift from accumulation to <b>Barista/Coast</b>: calculate the number, lock in the healthcare corpus, de-risk gradually to the buckets, and design the part-time chapter now while you still have a network.</p><p><b>Boomers / parents:</b> Priority is income certainty: SCSS, RBI bonds, annuities with return of purchase price, and a clear will. Children: help them map it in this app — it's a kind conversation to have early.</p>`],
+['Common mistakes (and the fix)',`<ul><li><b>Using 25× and today's expenses.</b> Fix: inflate first, use 28–33×.</li><li><b>No healthcare plan.</b> Fix: ₹25L+ floater + separate medical corpus; medical inflation is double-digit.</li><li><b>Forgetting lumpy costs</b> — weddings, kids' education, parents' care, home repairs. Fix: separate goal funds.</li><li><b>Counting your house as corpus.</b> It doesn't pay your bills (unless you rent it or sell it).</li><li><b>All equity at FIRE date.</b> Fix: buckets 2–3 years before.</li><li><b>Lifestyle creep.</b> Fix: automate SIP on salary day; spend what's left, not the other way around.</li><li><b>No identity after work.</b> Plan the "what" before the "when" — purpose, people, projects.</li><li><b>Extreme frugality that breaks relationships.</b> FIRE is a design for a good life, not a punishment. Choose Slow FIRE if Lean hurts.</li></ul>`],
+['How to use instinct.FIRE',`<ol><li><b>Discover</b> — take the quiz, read the six types, pick one (you can change later).</li><li><b>Plan</b> — enter income, expenses, corpus, assumptions. Add loans in Loans. Save.</li><li><b>Home</b> — your FIRE number, freedom date, Freedom Flame, Ladder, projection chart and insights.</li><li><b>Track</b> — on salary day each month, log income, spend, invested, and (optionally) your real corpus from your statements. Streaks keep you honest.</li><li><b>Calc</b> — the standalone calculator for "what-if" games and for friends.</li><li><b>More</b> — breathe, read a spark, export a backup.</li></ol><p>Everything is stored on your device only. Nothing is uploaded anywhere.</p>`]
+];
+$('lessons').innerHTML=LESSONS.map((l,i)=>'<details'+(i===0?' open':'')+'><summary>'+(i+1)+'. '+l[0]+'</summary>'+l[1]+'</details>').join('');
+/* ===================== DATA ===================== */
+function exportData(){const b=new Blob([JSON.stringify(S,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='instinct-fire-backup-'+thisYM()+'.json';a.click();toast('Backup downloaded')}
+function importData(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!d||typeof d!=='object')throw 0;S={plan:d.plan||null,loans:d.loans||[],months:d.months||[],quiz:d.quiz||null,startYM:d.startYM||null,chosenType:d.chosenType};save();toast('Restored');go('home')}catch(e){toast('Not a valid backup')}};r.readAsText(f)}
+function resetAll(){if(confirm('Delete your plan, loans and all logged months on this device?')){localStorage.removeItem(KEY);S=load();toast('Reset');go('home')}}
+/* ===================== BOOT ===================== */
+buildGrids();go('home');
+function net(){$('netBadge').textContent=navigator.onLine?'● online · works offline too':'● offline mode'}net();window.addEventListener('online',net);window.addEventListener('offline',net);
+if('serviceWorker' in navigator&&location.protocol.startsWith('http')){navigator.serviceWorker.register('sw.js').catch(()=>{})}
+</script>
+</body>
+</html>
