@@ -3,6 +3,7 @@
   'use strict';
   var C = Doodles.C;
   var A4W = 210, A4H = 297, M = 14;
+  var DISCLAIMER = 'Mutual fund investments are subject to market risks, read all scheme related documents carefully.';
 
   function hex(doc, which, h) {
     var n = parseInt(h.slice(1), 16);
@@ -63,13 +64,18 @@
   }
 
   function footer(doc, page, pages, info) {
+    // statutory disclaimer on every page
+    hex(doc, 'fill', '#FFF0F3');
+    doc.roundedRect(M, A4H - 22, A4W - 2 * M, 8, 2, 2, 'F');
+    font(doc, 'BalooSB', 8.6, C.ink);
+    doc.text(DISCLAIMER, A4W / 2, A4H - 16.8, { align: 'center' });
     hex(doc, 'draw', C.grid);
     doc.setLineWidth(0.3);
-    doc.line(M, A4H - 14, A4W - M, A4H - 14);
+    doc.line(M, A4H - 11.5, A4W - M, A4H - 11.5);
     font(doc, 'Baloo', 7.5, C.inkSoft);
     var left = info.preparedBy ? 'Prepared by ' + info.preparedBy + (info.contact ? '  |  ' + info.contact : '') : 'Made with instinct.SIP';
-    doc.text(left, M, A4H - 9);
-    doc.text('Page ' + page + ' of ' + pages, A4W - M, A4H - 9, { align: 'right' });
+    doc.text(left, M, A4H - 7);
+    doc.text('Page ' + page + ' of ' + pages, A4W - M, A4H - 7, { align: 'right' });
   }
 
   function build(r, info) {
@@ -184,7 +190,7 @@
     y += chartH + 6;
 
     /* ---- other route ---- */
-    if (y + 26 < A4H - 20) {
+    if (y + 21 < A4H - 25) {
       sketchBox(doc, M, y, A4W - 2 * M, 21, C.marigoldWash, 4);
       font(doc, 'BalooXB', 11, C.ink);
       doc.text(d.altTitle, M + 6, y + 8);
@@ -221,7 +227,7 @@
     };
     head();
     r.schedule.forEach(function (row, i) {
-      if (y > A4H - 32) { doc.addPage(); y = 20; head(); }
+      if (y > A4H - 36) { doc.addPage(); y = 20; head(); }
       if (i % 2 === 0) { hex(doc, 'fill', '#F3F7FF'); doc.rect(M, y - 4.6, A4W - 2 * M, 6.6, 'F'); }
       var last = i === r.schedule.length - 1;
       font(doc, last ? 'BalooXB' : 'Baloo', 9.5, C.ink);
@@ -235,7 +241,7 @@
     });
 
     y += 8;
-    if (y > A4H - 92) { doc.addPage(); y = 20; }
+    if (y > A4H - 100) { doc.addPage(); y = 20; }
     font(doc, 'Baloo', 9.2, C.inkSoft);
     var method = r.kind === 'sip'
       ? ['A SIP is an equal amount invested at the start of every month. Each instalment grows at the monthly rate (yearly return / 12), and the values are added up.',
@@ -259,17 +265,20 @@
 
     font(doc, 'BalooSB', 9, C.ink);
     doc.text('Please note', M, y);
+    font(doc, 'BalooXB', 9.6, C.melon);
+    var dl = doc.splitTextToSize(DISCLAIMER, A4W - 2 * M);
+    doc.text(dl, M, y + 5.5);
+    y += 5.5 + dl.length * 4.4;
     font(doc, 'Baloo', 8.2, C.inkSoft);
     var disc = doc.splitTextToSize(
       'This report is an illustration, not a promise of returns. It assumes the same return every year; real investments rise and fall, and actual results will differ. ' +
-      'Mutual fund investments are subject to market risks; read all scheme-related documents carefully. Taxes, exit loads and expense ratios are not included. ' +
-      'Past performance does not guarantee future returns.', A4W - 2 * M);
-    doc.text(disc, M, y + 5);
+      'Taxes, exit loads and expense ratios are not included. Past performance does not guarantee future returns.', A4W - 2 * M);
+    doc.text(disc, M, y + 1.5);
 
     var pages = doc.getNumberOfPages();
     for (var p = 1; p <= pages; p++) { doc.setPage(p); footer(doc, p, pages, info); }
     return { doc: doc, fileName: fileName(r, info) };
   }
 
-  root.Report = { build: build, fileName: fileName };
+  root.Report = { build: build, fileName: fileName, DISCLAIMER: DISCLAIMER };
 })(this);

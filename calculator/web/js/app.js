@@ -303,7 +303,7 @@
     if (Bridge) {
       var b64 = doc.output('datauristring').split('base64,')[1];
       var msg = '';
-      if (action === 'share') msg = Bridge.sharePdf(b64, name);
+      if (action === 'share') msg = (Bridge.sharePdfWithText ? Bridge.sharePdfWithText(b64, name, shareText()) : Bridge.sharePdf(b64, name));
       else if (action === 'save') msg = Bridge.savePdf(b64, name);
       else msg = Bridge.openPdf(b64, name);
       if (msg && msg.indexOf('Error') === 0) { toast(msg); return; }
@@ -317,7 +317,7 @@
       var file;
       try { file = new File([blob], name, { type: 'application/pdf' }); } catch (e) {}
       if (file && navigator.canShare && navigator.canShare({ files: [file] })) {
-        navigator.share({ files: [file], title: name }).catch(function () {});
+        navigator.share({ files: [file], title: name, text: shareText() }).catch(function () {});
         confetti(fromEl);
         return;
       }
@@ -326,6 +326,11 @@
     doc.save(name);
     toast('PDF downloaded');
     confetti(fromEl);
+  }
+
+  function shareText() {
+    var who = $('clientName').value.trim();
+    return (who ? 'Hi ' + who + ', p' : 'P') + 'lease find your investment plan attached.\n\n' + Report.DISCLAIMER;
   }
 
   $('sharePdf').addEventListener('click', function () { makePdf('share'); });

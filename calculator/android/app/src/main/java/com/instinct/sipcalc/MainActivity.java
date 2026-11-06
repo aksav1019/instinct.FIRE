@@ -107,6 +107,11 @@ public class MainActivity extends AppCompatActivity {
     public class Bridge {
         @JavascriptInterface
         public String sharePdf(String base64, String name) {
+            return sharePdfWithText(base64, name, null);
+        }
+
+        @JavascriptInterface
+        public String sharePdfWithText(String base64, String name, final String text) {
             try {
                 final Uri uri = cachePdf(base64, name);
                 final String fname = safe(name);
@@ -115,6 +120,7 @@ public class MainActivity extends AppCompatActivity {
                     send.setType("application/pdf");
                     send.putExtra(Intent.EXTRA_STREAM, uri);
                     send.putExtra(Intent.EXTRA_SUBJECT, fname.replace(".pdf", "").replace('_', ' '));
+                    if (text != null && !text.isEmpty()) send.putExtra(Intent.EXTRA_TEXT, text);
                     send.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                     startActivity(Intent.createChooser(send, "Send report"));
                 });
