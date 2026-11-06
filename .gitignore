@@ -5,3 +5,8 @@ android/app/src/main/assets/
 android/local.properties
 *.apk
 .DS_Store
+calculator/android/.gradle/
+calculator/android/build/
+calculator/android/app/build/
+calculator/android/app/src/main/assets/
+calculator/android/local.properties

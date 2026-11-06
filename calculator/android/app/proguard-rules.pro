@@ -1,0 +1,1 @@
+-keepclassmembers class com.instinct.sipcalc.MainActivity$Bridge { @android.webkit.JavascriptInterface <methods>; }

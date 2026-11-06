@@ -3,6 +3,9 @@ name: Build instinct.FIRE APK
 on:
   push:
     branches: [ main ]
+    paths-ignore:
+      - 'calculator/**'
+      - '.github/workflows/build-calculator-apk.yml'
   workflow_dispatch:
 
 permissions:

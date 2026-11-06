@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F3F7FF">
+<title>instinct.SIP</title>
+<link rel="icon" href="icon.svg">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body data-kind="sip" data-mode="grow">
+
+<!-- Splash: the doodle draws itself, then the notebook opens -->
+<div id="splash" aria-hidden="true">
+  <svg id="splashArt" viewBox="0 0 240 200" width="220" height="184"></svg>
+  <p class="splash-title">instinct<span>.SIP</span></p>
+  <p class="splash-sub hand">small steps, big money</p>
+</div>
+
+<header class="topbar">
+  <div class="brand">
+    <svg id="brandCoin" viewBox="0 0 44 44" width="38" height="38" aria-hidden="true"></svg>
+    <div>
+      <p class="brand-name">instinct<span>.SIP</span></p>
+      <p class="brand-tag hand">SIP &amp; lumpsum planner</p>
+    </div>
+  </div>
+  <button class="icon-btn" id="howBtn" aria-label="How the numbers are calculated">?</button>
+</header>
+
+<main id="app">
+  <!-- What kind of investment -->
+  <div class="kind-switch" role="tablist" aria-label="Investment type">
+    <button role="tab" class="kind-tab" data-kind="sip" aria-selected="true">
+      <span class="kind-title">SIP</span><span class="kind-sub">every month</span>
+    </button>
+    <button role="tab" class="kind-tab" data-kind="lump" aria-selected="false">
+      <span class="kind-title">Lumpsum</span><span class="kind-sub">one time</span>
+    </button>
+    <svg class="kind-ink" id="kindInk" aria-hidden="true"></svg>
+  </div>
+
+  <!-- What question are we answering -->
+  <div class="ask" role="radiogroup" aria-label="What do you want to know">
+    <button role="radio" class="ask-chip" data-mode="grow" aria-checked="true">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 18l6-6 4 4 8-9"/><path d="M15 7h6v6"/></svg>
+      <span>What will it grow to?</span>
+    </button>
+    <button role="radio" class="ask-chip" data-mode="goal" aria-checked="false">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r=".6"/></svg>
+      <span>How much to invest for a goal?</span>
+    </button>
+  </div>
+
+  <!-- Story strip: illustration + one handwritten line -->
+  <section class="story" aria-live="polite">
+    <svg id="scene" viewBox="0 0 320 150" aria-hidden="true"></svg>
+    <p id="storyLine" class="hand"></p>
+  </section>
+
+  <!-- Inputs -->
+  <section class="sheet inputs" aria-label="Inputs">
+    <div class="field" data-field="amount">
+      <div class="field-head">
+        <label for="amountInput" id="amountLabel">Monthly investment</label>
+        <div class="num-box money">
+          <span class="prefix">₹</span>
+          <input id="amountInput" type="text" inputmode="numeric" autocomplete="off">
+        </div>
+      </div>
+      <input type="range" id="amountRange" min="0" max="1000" step="1" aria-labelledby="amountLabel">
+      <p class="field-words hand" id="amountWords"></p>
+    </div>
+
+    <div class="field" data-field="rate">
+      <div class="field-head">
+        <label for="rateInput">Expected return (yearly)</label>
+        <div class="num-box">
+          <input id="rateInput" type="text" inputmode="decimal" autocomplete="off">
+          <span class="suffix">%</span>
+        </div>
+      </div>
+      <input type="range" id="rateRange" min="1" max="30" step="0.5" aria-label="Expected return">
+      <div class="presets" aria-label="Typical returns">
+        <button data-rate="7">FD-like 7%</button>
+        <button data-rate="10">Hybrid 10%</button>
+        <button data-rate="12">Equity 12%</button>
+        <button data-rate="15">Aggressive 15%</button>
+      </div>
+    </div>
+
+    <div class="field" data-field="years">
+      <div class="field-head">
+        <label for="yearsInput">Time period</label>
+        <div class="num-box">
+          <input id="yearsInput" type="text" inputmode="numeric" autocomplete="off">
+          <span class="suffix">yrs</span>
+        </div>
+      </div>
+      <input type="range" id="yearsRange" min="1" max="40" step="1" aria-label="Time period in years">
+    </div>
+    <p class="field-error" id="fieldError" role="alert"></p>
+  </section>
+
+  <!-- Answer -->
+  <section class="sheet answer" id="answer">
+    <p class="answer-q hand" id="answerQ"></p>
+    <p class="answer-big" id="answerBig">₹0</p>
+    <p class="answer-sub" id="answerSub"></p>
+    <svg class="marker" id="answerMarker" aria-hidden="true"></svg>
+
+    <div class="split">
+      <svg id="donut" viewBox="0 0 170 170" aria-hidden="true"></svg>
+      <dl class="legend">
+        <div class="lg invested"><dt>You invest</dt><dd id="lgInvested"></dd></div>
+        <div class="lg gains"><dt>Market adds</dt><dd id="lgGains"></dd></div>
+        <div class="lg total"><dt>You get</dt><dd id="lgTotal"></dd></div>
+      </dl>
+    </div>
+    <p class="multiple hand" id="multipleLine"></p>
+  </section>
+
+  <!-- Another way to look at it -->
+  <section class="sheet alt" id="altCard">
+    <svg class="alt-doodle" id="altDoodle" viewBox="0 0 70 70" aria-hidden="true"></svg>
+    <div>
+      <p class="alt-title" id="altTitle"></p>
+      <p class="alt-body" id="altBody"></p>
+    </div>
+  </section>
+
+  <!-- Growth chart -->
+  <section class="sheet growth">
+    <div class="growth-head">
+      <h2>How it grows, year by year</h2>
+      <div class="key"><span class="k invested">invested</span><span class="k gains">growth</span></div>
+    </div>
+    <svg id="growthChart" aria-label="Year by year growth chart" role="img"></svg>
+    <details class="table-wrap">
+      <summary>See the full table</summary>
+      <table id="yearTable">
+        <thead><tr><th>Year</th><th>Invested</th><th>Value</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </details>
+  </section>
+
+  <p class="fine">Illustration only. Assumes the return stays the same every year; real markets go up and down. Mutual fund investments are subject to market risks.</p>
+  <div class="dock-space"></div>
+</main>
+
+<div class="dock">
+  <button class="cta" id="reportBtn">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h8l5 5v13H6z"/><path d="M14 3v5h5"/><path d="M9 14h6M9 17h4"/></svg>
+    Make PDF report
+  </button>
+</div>
+
+<!-- Report sheet -->
+<div class="overlay" id="reportOverlay" hidden>
+  <div class="bottom-sheet" role="dialog" aria-modal="true" aria-labelledby="reportTitle">
+    <div class="grab" aria-hidden="true"></div>
+    <h2 id="reportTitle">PDF report for your client</h2>
+    <p class="sheet-hint" id="reportSummary"></p>
+    <label class="txt">Client name
+      <input id="clientName" type="text" autocomplete="off" placeholder="e.g. Rahul Mehta">
+    </label>
+    <label class="txt">Prepared by
+      <input id="preparedBy" type="text" autocomplete="off" placeholder="Your name or firm">
+    </label>
+    <label class="txt">Contact (optional)
+      <input id="contactLine" type="text" autocomplete="off" placeholder="Phone or email shown on the report">
+    </label>
+    <label class="txt">Note for the client (optional)
+      <textarea id="clientNote" rows="2" placeholder="e.g. Goal: daughter's higher education in 2041"></textarea>
+    </label>
+    <div class="sheet-actions">
+      <button class="cta" id="sharePdf">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="M8.2 10.8l7.6-4.5M8.2 13.2l7.6 4.5"/></svg>
+        Share PDF
+      </button>
+      <button class="ghost" id="savePdf">Save to phone</button>
+      <button class="ghost" id="openPdf">Preview</button>
+    </div>
+    <button class="text-btn" id="closeReport">Close</button>
+  </div>
+</div>
+
+<!-- How it's calculated -->
+<div class="overlay" id="howOverlay" hidden>
+  <div class="bottom-sheet" role="dialog" aria-modal="true" aria-labelledby="howTitle">
+    <div class="grab" aria-hidden="true"></div>
+    <h2 id="howTitle">How the numbers work</h2>
+    <div class="how">
+      <h3>SIP</h3>
+      <p>You invest the same amount at the start of every month. Each instalment grows at the monthly rate (yearly return ÷ 12).</p>
+      <p class="formula">Value = P × [(1 + i)<sup>n</sup> − 1] ÷ i × (1 + i)</p>
+      <p class="small">P = monthly amount, i = yearly return ÷ 12 ÷ 100, n = years × 12. This is the same method Groww and most fund-house calculators use.</p>
+      <h3>Lumpsum</h3>
+      <p>You invest once and it compounds every year.</p>
+      <p class="formula">Value = P × (1 + r)<sup>t</sup></p>
+      <h3>Goal mode</h3>
+      <p>The same formulas, run backwards: we start from the target and solve for the amount you need to put in today, or every month.</p>
+      <p class="small">Check: put the answer back into "What will it grow to?" and you land on your target.</p>
+    </div>
+    <button class="text-btn" id="closeHow">Got it</button>
+  </div>
+</div>
+
+<div id="toast" role="status" aria-live="polite"></div>
+<canvas id="pdfCanvas" width="1600" height="900" hidden></canvas>
+
+<script src="lib/rough.js"></script>
+<script src="lib/jspdf.umd.min.js"></script>
+<script src="js/calc.js"></script>
+<script src="js/doodles.js"></script>
+<script src="js/pdf-fonts.js"></script>
+<script src="js/report.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
