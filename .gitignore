@@ -10,3 +10,8 @@ calculator/android/build/
 calculator/android/app/build/
 calculator/android/app/src/main/assets/
 calculator/android/local.properties
+thambi/android/.gradle/
+thambi/android/build/
+thambi/android/app/build/
+thambi/android/app/src/main/assets/
+thambi/android/local.properties

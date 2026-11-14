@@ -1,0 +1,10 @@
+<resources>
+    <style name="Theme.Thambi" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowBackground">@color/milk</item>
+        <item name="android:statusBarColor">@color/mango</item>
+        <item name="android:navigationBarColor">@color/milk</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
+        <item name="colorAccent">#6B3CFF</item>
+    </style>
+</resources>

@@ -6,6 +6,8 @@ on:
     paths-ignore:
       - 'calculator/**'
       - '.github/workflows/build-calculator-apk.yml'
+      - 'thambi/**'
+      - '.github/workflows/build-thambi-apk.yml'
   workflow_dispatch:
 
 permissions:
